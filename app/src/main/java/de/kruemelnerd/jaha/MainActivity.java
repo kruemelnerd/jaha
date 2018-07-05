@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview_list_payments);
         final PaymentListAdapter adapter = new PaymentListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab_new_payment);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,13 +65,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == NEW_PAYMENT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
-            PaymentEntry payment = new PaymentEntry(data.getStringExtra(NewPaymentActivity.EXTRA_REPLY), 12);
+            PaymentEntry payment = (PaymentEntry) data.getSerializableExtra(NewPaymentActivity.EXTRA_REPLY);
             mPaymentViewModel.insert(payment);
-        }else {
-            Toast.makeText(
-                    getApplicationContext(),
-                    R.string.error_field_required,
-                    Toast.LENGTH_SHORT).show();
         }
     }
 

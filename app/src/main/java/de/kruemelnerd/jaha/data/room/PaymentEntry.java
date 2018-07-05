@@ -5,8 +5,11 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity(tableName = "paymentEntry")
-public class PaymentEntry {
+public class PaymentEntry implements Serializable {
+//TODO: Use Parcable instead of Serializable
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "paymentEntryId")
