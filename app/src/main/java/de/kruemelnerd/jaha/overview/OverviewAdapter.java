@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -13,23 +14,38 @@ import de.kruemelnerd.jaha.R;
 import de.kruemelnerd.jaha.data.room.PaymentEntry;
 
 
-public class PaymentListAdapter extends RecyclerView.Adapter<PaymentListAdapter.WordViewHolder> {
+public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.WordViewHolder> {
+
+
+    public interface OnItemClickListener {
+        void onItemClick(int position, PaymentEntry item);
+    }
 
     class WordViewHolder extends RecyclerView.ViewHolder {
         private final TextView paymentNameTextView;
         private final TextView paymentPriceTextView;
+        private final LinearLayout overviewItemHolder;
 
         private WordViewHolder(View itemView) {
             super(itemView);
             paymentNameTextView = itemView.findViewById(R.id.textViewName);
             paymentPriceTextView = itemView.findViewById(R.id.textViewPrice);
+            overviewItemHolder = itemView.findViewById(R.id.overviewItemHolder);
         }
     }
 
     private final LayoutInflater mInflater;
-    private List<PaymentEntry> mWords; // Cached copy of words
+    private List<PaymentEntry> mPayments; // Cached copy of words
+    private OnItemClickListener listener;
 
-    public PaymentListAdapter(Context context) { mInflater = LayoutInflater.from(context); }
+    public OverviewAdapter(Context context) {
+        mInflater = LayoutInflater.from(context);
+    }
+
+    public OverviewAdapter(Context context, OnItemClickListener listener) {
+        mInflater = LayoutInflater.from(context);
+        this.listener = listener;
+    }
 
     @Override
     public WordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -38,19 +54,27 @@ public class PaymentListAdapter extends RecyclerView.Adapter<PaymentListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(WordViewHolder holder, int position) {
-        if (mWords != null) {
-            PaymentEntry current = mWords.get(position);
+    public void onBindViewHolder(WordViewHolder holder, final int position) {
+        if (mPayments != null) {
+            final PaymentEntry current = mPayments.get(position);
             holder.paymentNameTextView.setText(current.getName());
             holder.paymentPriceTextView.setText(String.valueOf(current.getPrice()));
+
+            holder.overviewItemHolder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(position, current);
+                }
+            });
+
         } else {
             // Covers the case of data not being ready yet.
             holder.paymentNameTextView.setText("No Word");
         }
     }
 
-    public void setPayments(List<PaymentEntry> words){
-        mWords = words;
+    public void setPayments(List<PaymentEntry> payments) {
+        mPayments = payments;
         notifyDataSetChanged();
     }
 
@@ -58,8 +82,8 @@ public class PaymentListAdapter extends RecyclerView.Adapter<PaymentListAdapter.
     // mWords has not been updated (means initially, it's null, and we can't return null).
     @Override
     public int getItemCount() {
-        if (mWords != null)
-            return mWords.size();
+        if (mPayments != null)
+            return mPayments.size();
         else return 0;
     }
 }

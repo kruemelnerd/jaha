@@ -3,24 +3,23 @@ package de.kruemelnerd.jaha;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.List;
 
 import de.kruemelnerd.jaha.addNewPayment.NewPaymentActivity;
 import de.kruemelnerd.jaha.data.room.PaymentEntry;
-import de.kruemelnerd.jaha.overview.PaymentListAdapter;
+import de.kruemelnerd.jaha.detail.DetailActivity;
+import de.kruemelnerd.jaha.overview.OverviewAdapter;
 import de.kruemelnerd.jaha.viewModel.PaymentViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,8 +35,18 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        OverviewAdapter.OnItemClickListener listener = new OverviewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, PaymentEntry item) {
+                launchDetailActivity(position, item);
+            }
+        };
+
         RecyclerView recyclerView = findViewById(R.id.recyclerview_list_payments);
-        final PaymentListAdapter adapter = new PaymentListAdapter(this);
+        final OverviewAdapter adapter = new OverviewAdapter(this, listener);
+
+
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -91,5 +100,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void launchDetailActivity(int position, PaymentEntry entry){
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        intent.putExtra(DetailActivity.EXTRA_POSITION, position);
+        intent.putExtra(DetailActivity.EXTRA_PAYMENT, entry);
+        MainActivity.this.startActivity(intent);
     }
 }
