@@ -9,7 +9,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 
-@Database(entities = {PaymentEntry.class}, version = 2)
+@Database(entities = {PaymentEntry.class}, version = 3)
 public abstract class PaymentRoomDatabase extends RoomDatabase {
 
     public abstract PaymentDao paymentEntryDao();
@@ -22,7 +22,7 @@ public abstract class PaymentRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             PaymentRoomDatabase.class, "payment_database")
-                            //.fallbackToDestructiveMigration()
+                            .fallbackToDestructiveMigration() // FIXME: Add better version: https://medium.com/google-developers/understanding-migrations-with-room-f01e04b07929
                             .addCallback(sRoomDatabaseCallback)
                             .build();
                 }

@@ -7,4 +7,9 @@
 
     <dimen name="small_margin">6dp</dimen>
     <dimen name="big_margin">16dp</dimen>
+
+
+    <dimen name="margin_addNewPayment_price_end">42dp</dimen>
+
+
 </resources>

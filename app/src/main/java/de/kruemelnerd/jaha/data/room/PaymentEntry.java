@@ -21,6 +21,9 @@ public class PaymentEntry implements Serializable {
     @ColumnInfo(name = "price")
     private float mPrice;
 
+    @ColumnInfo(name = "description")
+    private String mDescription;
+
     @Ignore
     public PaymentEntry(String name, float price) {
         this.mName = name;
@@ -55,6 +58,14 @@ public class PaymentEntry implements Serializable {
 
     public void setPrice(float mPrice) {
         this.mPrice = mPrice;
+    }
+
+    public String getDescription() {
+        return mDescription;
+    }
+
+    public void setDescription(String description) {
+        this.mDescription = description;
     }
 }
 

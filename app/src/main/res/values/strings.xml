@@ -4,9 +4,22 @@
 
     <string name="hint_name">Name</string>
     <string name="hint_price">Price</string>
+    <string name="hint_barcode">Barcode</string>
+    <string name="hint_date">Date</string>
+    <string name="hint_time">Time</string>
+    <string name="hint_category">Category</string>
+    <string name="hint_location">Location</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_picture">Picture</string>
 
 
     <string name="button_save">Save</string>
     <string name="error_field_required">This field is required</string>
+
+    <string-array name="currencies_array">
+        <item>Euro</item>
+        <item>USD</item>
+        <item>Yen</item>
+    </string-array>
 
 </resources>

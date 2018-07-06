@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,10 +19,12 @@ public class NewPaymentActivity extends AppCompatActivity {
 
     public static final String EXTRA_REPLY = "de.kruemelnerd.android.payment.listsql.REPLY";
 
-    @BindView(R.id.edit_name)
+    @BindView(R.id.addPaymentName)
     EditText mEditNameView;
-    @BindView(R.id.edit_price)
+    @BindView(R.id.addPaymentPrice)
     EditText mEditPriceView;
+    @BindView(R.id.addPaymentDescription)
+    EditText mEditViewDescription;
 
 
     @Override
@@ -32,8 +36,20 @@ public class NewPaymentActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbarNewPayment);
         setSupportActionBar(toolbar); // FIXME: Not working at the moment. Nevermind. Wait for the big implementation
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        Spinner spinner = findViewById(R.id.currencies_spinner);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.currencies_array, android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
     }
 
     @Override
@@ -45,6 +61,7 @@ public class NewPaymentActivity extends AppCompatActivity {
     @OnClick(R.id.button_save)
     public void savePayment() {
         Intent replyIntent = new Intent();
+        //This two are mandatory
         boolean nameFilled = isMandatoryFieldFilled(mEditNameView);
         boolean priceFilled = isMandatoryFieldFilled(mEditPriceView);
 
@@ -52,7 +69,7 @@ public class NewPaymentActivity extends AppCompatActivity {
             PaymentEntry paymentEntry = new PaymentEntry();
             paymentEntry.setName(mEditNameView.getText().toString());
             paymentEntry.setPrice(Float.valueOf(mEditPriceView.getText().toString()));
-
+            paymentEntry.setDescription(mEditViewDescription.getText().toString());
 
             replyIntent.putExtra(EXTRA_REPLY, paymentEntry);
             setResult(RESULT_OK, replyIntent);
