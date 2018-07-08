@@ -29,4 +29,6 @@ public class PaymentViewModel extends AndroidViewModel {
         mRepository.insert(payment);
     }
 
+    public void update(PaymentEntry payment) { mRepository.update(payment); }
+
 }

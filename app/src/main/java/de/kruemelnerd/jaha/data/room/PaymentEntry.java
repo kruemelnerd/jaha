@@ -6,6 +6,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 @Entity(tableName = "paymentEntry")
 public class PaymentEntry implements Serializable {
@@ -23,6 +24,9 @@ public class PaymentEntry implements Serializable {
 
     @ColumnInfo(name = "description")
     private String mDescription;
+
+    @ColumnInfo(name = "date")
+    private Calendar mCalendarDate;
 
     @Ignore
     public PaymentEntry(String name, float price) {
@@ -66,6 +70,14 @@ public class PaymentEntry implements Serializable {
 
     public void setDescription(String description) {
         this.mDescription = description;
+    }
+
+    public Calendar getCalendarDate() {
+        return  this.mCalendarDate;
+    }
+
+    public void setCalendarDate(Calendar date) {
+        this.mCalendarDate = date;
     }
 }
 

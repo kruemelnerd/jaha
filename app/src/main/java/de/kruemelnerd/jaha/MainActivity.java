@@ -58,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         FloatingActionButton fab = findViewById(R.id.fab_new_payment);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +73,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
     }
+
+
+
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -75,7 +85,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(requestCode == NEW_PAYMENT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
             PaymentEntry payment = (PaymentEntry) data.getSerializableExtra(NewPaymentActivity.EXTRA_REPLY);
-            mPaymentViewModel.insert(payment);
+            if(payment.getId() == 0){
+                mPaymentViewModel.insert(payment);
+            }else {
+                mPaymentViewModel.update(payment);
+            }
         }
     }
 
@@ -103,9 +117,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchDetailActivity(int position, PaymentEntry entry){
-        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        Intent intent = new Intent(MainActivity.this, NewPaymentActivity.class);
         intent.putExtra(DetailActivity.EXTRA_POSITION, position);
         intent.putExtra(DetailActivity.EXTRA_PAYMENT, entry);
-        MainActivity.this.startActivity(intent);
+        startActivityForResult(intent, NEW_PAYMENT_ACTIVITY_REQUEST_CODE);
+//        MainActivity.this.startActivity(intent);
     }
 }

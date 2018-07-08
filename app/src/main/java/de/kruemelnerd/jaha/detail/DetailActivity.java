@@ -6,6 +6,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +33,8 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.detailPrice)
     TextView mDetailPrice;
 
-
+    @BindView(R.id.detailDate)
+    TextView mDetailDate;
 
 
     @Override
@@ -57,6 +62,13 @@ public class DetailActivity extends AppCompatActivity {
         mDetailCategory.setText(entry.getName());
         mDetailDescription.setText(entry.getDescription());
         mDetailPrice.setText(String.valueOf(entry.getPrice()));
+        if(entry.getCalendarDate() != null){
+            final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
+
+            mDetailDate.setText(dateFormatter.format(entry.getCalendarDate().getTime()));
+        }else {
+            Toast.makeText(this, "Date is missing", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

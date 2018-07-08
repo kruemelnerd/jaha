@@ -55,6 +55,20 @@ public class PaymentRepository {
         new insertAsyncTask(mWordDao).execute(word);
     }
 
+
+    public void update(PaymentEntry payment) {
+
+        new AsyncTask<PaymentEntry, Void, Void>() {
+            private PaymentDao mAsyncTaskDao;
+
+            @Override
+            protected Void doInBackground(PaymentEntry... paymentEntries) {
+                mWordDao.update(paymentEntries[0]);
+                return null;
+            }
+        }.execute(payment);
+    }
+
     private static class insertAsyncTask extends AsyncTask<PaymentEntry, Void, Void> {
 
         private PaymentDao mAsyncTaskDao;

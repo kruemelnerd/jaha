@@ -91,6 +91,19 @@
                 tools:text="Dies ist eine kleine Produktbeschreibung. Mal schauen wieviel hier stehen könnte." />
 
 
+            <TextView
+                android:id="@+id/detailDate"
+                android:layout_width="match_parent"
+                android:layout_height="118dp"
+                android:layout_marginBottom="8dp"
+                android:lineSpacingExtra="8dp"
+                android:padding="@dimen/big_padding"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/detailDescription"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="08.07.2018" />
+
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v4.widget.NestedScrollView>
