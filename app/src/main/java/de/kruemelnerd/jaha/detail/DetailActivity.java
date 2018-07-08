@@ -21,7 +21,16 @@ public class DetailActivity extends AppCompatActivity {
     Toolbar mToolbar;
 
     @BindView(R.id.detailDescription)
-    TextView mDetailName;
+    TextView mDetailDescription;
+
+    @BindView(R.id.detailCategory)
+    TextView mDetailCategory;
+
+    @BindView(R.id.detailPrice)
+    TextView mDetailPrice;
+
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,20 +41,22 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-
         Bundle data = intent.getExtras();
-
         PaymentEntry entry = (PaymentEntry) data.getSerializable(EXTRA_PAYMENT);
         showPayment(entry);
     }
 
     private void showPayment(PaymentEntry entry) {
         getSupportActionBar().setTitle(entry.getName());
-        mDetailName.setText(entry.getName());
+        mDetailCategory.setText(entry.getName());
+        mDetailDescription.setText(entry.getDescription());
+        mDetailPrice.setText(String.valueOf(entry.getPrice()));
 
     }
 

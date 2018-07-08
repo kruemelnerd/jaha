@@ -51,24 +51,44 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            
+
+            <TextView
+                android:id="@+id/detailPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="8dp"
+                android:padding="@dimen/big_padding"
+                android:textSize="18sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/detailCategory"
+
+                tools:text="200 Euro" />
+
+
             <TextView
                 android:id="@+id/detailCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:lineSpacingExtra="8dp"
                 android:padding="@dimen/big_padding"
-                tools:text="Dies ist eine kleine Produktbeschreibung. Mal schauen wieviel hier stehen könnte."
-                android:textSize="20sp" />
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/detailPrice"
+                app:layout_constraintBottom_toTopOf="@+id/detailDescription"
+                tools:text="Kino Freunde" />
 
             <TextView
                 android:id="@+id/detailDescription"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="118dp"
+                android:layout_marginBottom="8dp"
                 android:lineSpacingExtra="8dp"
                 android:padding="@dimen/big_padding"
-                tools:text="Dies ist eine kleine Produktbeschreibung. Mal schauen wieviel hier stehen könnte."
-                android:textSize="20sp" />
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/detailCategory"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="Dies ist eine kleine Produktbeschreibung. Mal schauen wieviel hier stehen könnte." />
 
 
         </android.support.constraint.ConstraintLayout>
