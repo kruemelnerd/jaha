@@ -39,6 +39,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
     @BindView(R.id.addPaymentDate)
     EditText mEditViewDate;
 
+    private PaymentEntry mPaymentEntry;
     private DatePickerDialog mDatePickerDialog;
     private Calendar newDate;
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
@@ -62,6 +63,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         isNewPayment = checkIfNewPayment();
 
         if (isNewPayment) {
+            mPaymentEntry = new PaymentEntry();
             Spinner spinner = findViewById(R.id.currencies_spinner);
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                     R.array.currencies_array, android.R.layout.simple_spinner_item);
@@ -75,8 +77,10 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         } else {
             Intent intent = getIntent();
             Bundle data = intent.getExtras();
-            PaymentEntry entry = (PaymentEntry) data.getSerializable(EXTRA_PAYMENT);
-            showPayment(entry);
+            if(data != null){
+                mPaymentEntry = (PaymentEntry) data.getSerializable(EXTRA_PAYMENT);
+            }
+            showPayment();
 
         }
 
@@ -90,23 +94,23 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             return true;
         }
         PaymentEntry entry = (PaymentEntry) data.getSerializable(EXTRA_PAYMENT);
-        if (entry == null) {
-            return true;
-        }
-        return false;
+        return (entry == null);
     }
 
 
-    private void showPayment(PaymentEntry entry) {
-        getSupportActionBar().setTitle(entry.getName());
-        mEditNameView.setText(entry.getName());
-        mEditViewDescription.setText(entry.getDescription());
-        mEditPriceView.setText(String.valueOf(entry.getPrice()));
-        if (entry.getCalendarDate() != null) {
+    private void showPayment() {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(mPaymentEntry.getName());
+        }
+
+        mEditNameView.setText(mPaymentEntry.getName());
+        mEditViewDescription.setText(mPaymentEntry.getDescription());
+        mEditPriceView.setText(String.valueOf(mPaymentEntry.getPrice()));
+        if (mPaymentEntry.getCalendarDate() != null) {
             final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
             mEditViewDate.setInputType(InputType.TYPE_NULL);
-            mEditViewDate.setText(dateFormatter.format(entry.getCalendarDate().getTime()));
+            mEditViewDate.setText(dateFormatter.format(mPaymentEntry.getCalendarDate().getTime()));
         } else {
             Toast.makeText(this, "Date is missing", Toast.LENGTH_SHORT).show();
         }
@@ -143,14 +147,14 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         boolean priceFilled = isMandatoryFieldFilled(mEditPriceView);
 
         if (nameFilled && priceFilled) {
-            PaymentEntry paymentEntry = new PaymentEntry();
-            paymentEntry.setName(mEditNameView.getText().toString());
-            paymentEntry.setPrice(Float.valueOf(mEditPriceView.getText().toString()));
-            paymentEntry.setDescription(mEditViewDescription.getText().toString());
 
-            paymentEntry.setCalendarDate(newDate);
+            mPaymentEntry.setName(mEditNameView.getText().toString());
+            mPaymentEntry.setPrice(Float.valueOf(mEditPriceView.getText().toString()));
+            mPaymentEntry.setDescription(mEditViewDescription.getText().toString());
 
-            replyIntent.putExtra(EXTRA_REPLY, paymentEntry);
+            mPaymentEntry.setCalendarDate(newDate);
+
+            replyIntent.putExtra(EXTRA_REPLY, mPaymentEntry);
             setResult(RESULT_OK, replyIntent);
 
             finish();
