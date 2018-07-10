@@ -29,7 +29,7 @@ import java.util.List;
 
 public class PaymentRepository {
 
-    private PaymentDao mWordDao;
+    private PaymentDao mPaymentDao;
     private LiveData<List<PaymentEntry>> mAllWords;
 
     // Note that in order to unit test the WordRepository, you have to remove the Application
@@ -38,8 +38,8 @@ public class PaymentRepository {
     // https://github.com/googlesamples
     public PaymentRepository(Application application) {
         PaymentRoomDatabase db = PaymentRoomDatabase.getDatabase(application);
-        mWordDao = db.paymentEntryDao();
-        mAllWords = mWordDao.getAllPayments();
+        mPaymentDao = db.paymentEntryDao();
+        mAllWords = mPaymentDao.getAllPayments();
     }
 
     // Room executes all queries on a separate thread.
@@ -48,25 +48,29 @@ public class PaymentRepository {
         return mAllWords;
     }
 
-    // You must call this on a non-UI thread or your app will crash.
-    // Like this, Room ensures that you're not doing any long running operations on the main
-    // thread, blocking the UI.
-    public void insert(PaymentEntry word) {
-        new insertAsyncTask(mWordDao).execute(word);
+    public LiveData<PaymentEntry> getPaymentWithBarcode(String barcode){
+        return mPaymentDao.getPaymentWithBarcode(barcode);
     }
 
 
-    public void update(PaymentEntry payment) {
 
+    public void update(PaymentEntry payment) {
         new AsyncTask<PaymentEntry, Void, Void>() {
             private PaymentDao mAsyncTaskDao;
 
             @Override
             protected Void doInBackground(PaymentEntry... paymentEntries) {
-                mWordDao.update(paymentEntries[0]);
+                mPaymentDao.update(paymentEntries[0]);
                 return null;
             }
         }.execute(payment);
+    }
+
+    // You must call this on a non-UI thread or your app will crash.
+    // Like this, Room ensures that you're not doing any long running operations on the main
+    // thread, blocking the UI.
+    public void insert(PaymentEntry word) {
+        new insertAsyncTask(mPaymentDao).execute(word);
     }
 
     private static class insertAsyncTask extends AsyncTask<PaymentEntry, Void, Void> {

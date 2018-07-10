@@ -1,12 +1,14 @@
 package de.kruemelnerd.jaha.addNewPayment;
 
 import android.app.DatePickerDialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -22,7 +24,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.kruemelnerd.jaha.R;
+import de.kruemelnerd.jaha.addNewPayment.barcodescanner.IntentIntegrator;
+import de.kruemelnerd.jaha.addNewPayment.barcodescanner.IntentResult;
 import de.kruemelnerd.jaha.data.room.PaymentEntry;
+import de.kruemelnerd.jaha.utils.StringUtils;
+import de.kruemelnerd.jaha.viewModel.PaymentViewModel;
 
 import static de.kruemelnerd.jaha.detail.DetailActivity.EXTRA_PAYMENT;
 
@@ -38,7 +44,13 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
     EditText mEditViewDescription;
     @BindView(R.id.addPaymentDate)
     EditText mEditViewDate;
+    @BindView(R.id.addPaymentBarcode)
+    EditText mEditViewBarcode;
+    @BindView(R.id.addPaymentCategory)
+    EditText mEditViewCategory;
 
+
+    private PaymentViewModel mPaymentViewModel;
     private PaymentEntry mPaymentEntry;
     private DatePickerDialog mDatePickerDialog;
     private Calendar newDate;
@@ -60,6 +72,10 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
+
+        mPaymentViewModel = ViewModelProviders.of(this).get(PaymentViewModel.class);
+//
+
         isNewPayment = checkIfNewPayment();
 
         if (isNewPayment) {
@@ -77,7 +93,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         } else {
             Intent intent = getIntent();
             Bundle data = intent.getExtras();
-            if(data != null){
+            if (data != null) {
                 mPaymentEntry = (PaymentEntry) data.getSerializable(EXTRA_PAYMENT);
             }
             showPayment();
@@ -106,6 +122,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         mEditNameView.setText(mPaymentEntry.getName());
         mEditViewDescription.setText(mPaymentEntry.getDescription());
         mEditPriceView.setText(String.valueOf(mPaymentEntry.getPrice()));
+        mEditViewBarcode.setText(mPaymentEntry.getBarcode());
+        mEditViewCategory.setText(mPaymentEntry.getCategory());
         if (mPaymentEntry.getCalendarDate() != null) {
             final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
@@ -151,7 +169,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             mPaymentEntry.setName(mEditNameView.getText().toString());
             mPaymentEntry.setPrice(Float.valueOf(mEditPriceView.getText().toString()));
             mPaymentEntry.setDescription(mEditViewDescription.getText().toString());
-
+            mPaymentEntry.setBarcode(mEditViewBarcode.getText().toString());
+            mPaymentEntry.setCategory(mEditViewCategory.getText().toString());
             mPaymentEntry.setCalendarDate(newDate);
 
             replyIntent.putExtra(EXTRA_REPLY, mPaymentEntry);
@@ -164,10 +183,50 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
 
     }
 
+    @OnClick(R.id.addPaymentFabBarcode)
+    public void scanBarcode() {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.initiateScan();
+    }
+
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null && StringUtils.isNotBlank(scanResult.getContents())) {
+
+            // handle scan result
+            final String code = scanResult.getContents().toUpperCase();
+
+            mPaymentEntry.setBarcode(code);
+            mEditViewBarcode.setText(mPaymentEntry.getBarcode());
+
+            mPaymentViewModel.getPaymentWithBarcode(code).observe(this, new Observer<PaymentEntry>() {
+                @Override
+                public void onChanged(@Nullable PaymentEntry entry) {
+                    if(entry != null){
+                        mPaymentEntry = entry;
+                        showPayment();
+                    }else {
+                        fillBarcode(code);
+                    }
+
+                }
+            });
+
+        } else {
+            // else continue with any other code you need in the method
+            Toast.makeText(this, getString(R.string.barcode_not_found), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void fillBarcode(String barcode){
+        Toast.makeText(this, getString(R.string.barcode_not_in_db), Toast.LENGTH_SHORT).show();
+        mEditViewBarcode.setText(barcode);
+    }
 
     private boolean isMandatoryFieldFilled(EditText editText) {
         String text = editText.getText().toString();
-        if (TextUtils.isEmpty(text)) {
+        if (StringUtils.isBlank(text)) {
             editText.setError(getString(R.string.error_field_required));
             return false;
         }

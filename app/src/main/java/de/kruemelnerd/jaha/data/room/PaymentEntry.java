@@ -28,6 +28,13 @@ public class PaymentEntry implements Serializable {
     @ColumnInfo(name = "date")
     private Calendar mCalendarDate;
 
+    @ColumnInfo(name = "category")
+    private String mCategory;
+
+    @ColumnInfo(name = "barcode")
+    private String mBarcode;
+
+
     @Ignore
     public PaymentEntry(String name, float price) {
         this.mName = name;
@@ -73,11 +80,27 @@ public class PaymentEntry implements Serializable {
     }
 
     public Calendar getCalendarDate() {
-        return  this.mCalendarDate;
+        return this.mCalendarDate;
     }
 
     public void setCalendarDate(Calendar date) {
         this.mCalendarDate = date;
+    }
+
+    public String getCategory() {
+        return mCategory;
+    }
+
+    public void setCategory(String category) {
+        this.mCategory = category;
+    }
+
+    public String getBarcode() {
+        return mBarcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.mBarcode = barcode;
     }
 }
 

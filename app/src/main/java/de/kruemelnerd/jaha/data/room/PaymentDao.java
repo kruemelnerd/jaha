@@ -29,5 +29,6 @@ public interface PaymentDao {
     @Query("DELETE FROM paymentEntry")
     public void deleteAll();
 
-
+    @Query("SELECT * FROM paymentEntry WHERE barcode= :barcode")
+    LiveData<PaymentEntry> getPaymentWithBarcode(String barcode);
 }

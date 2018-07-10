@@ -15,6 +15,8 @@
 
     <string name="button_save">Save</string>
     <string name="error_field_required">This field is required</string>
+    <string name="barcode_not_found">Barcode couldn\'t be found.</string>
+    <string name="barcode_not_in_db">Barcode isn\'t in the Database.</string>
 
     <string-array name="currencies_array">
         <item>Euro</item>

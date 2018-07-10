@@ -21,6 +21,7 @@ android {
 
 dependencies {
 
+    implementation 'com.google.zxing:core:3.3.3'
 
     // Room components
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"

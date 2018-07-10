@@ -14,6 +14,7 @@ public class PaymentViewModel extends AndroidViewModel {
 
     private PaymentRepository mRepository;
     private LiveData<List<PaymentEntry>> mAllPayments;
+    private LiveData<PaymentEntry> mPaymentWithBarcode;
 
     public PaymentViewModel(Application application){
         super(application);
@@ -24,6 +25,8 @@ public class PaymentViewModel extends AndroidViewModel {
     public LiveData<List<PaymentEntry>> getAllPayments(){
         return mAllPayments;
     }
+
+    public LiveData<PaymentEntry> getPaymentWithBarcode(String barcode){ return mRepository.getPaymentWithBarcode(barcode); }
 
     public void insert(PaymentEntry payment){
         mRepository.insert(payment);
