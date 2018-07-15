@@ -43,8 +43,8 @@
           android:fillColor="#33D3F4"/>
       <path
           android:pathData="M31.2,15.4c-9.6,0 -17.4,7.8 -17.4,17.4s7.8,17.4 17.4,17.4s17.4,-7.8 17.4,-17.4S40.8,15.4 31.2,15.4zM31.2,45.8c-7.2,0 -13,-5.8 -13,-13c0,-7.2 5.8,-13 13,-13c7.2,0 13,5.8 13,13C44.3,40 38.4,45.8 31.2,45.8z"
-          android:strokeAlpha="0,1"
+          android:strokeAlpha="0.1"
           android:fillColor="#231F20"
-          android:fillAlpha="0,1"/>
+          android:fillAlpha="0.1"/>
     </group>
 </vector>
