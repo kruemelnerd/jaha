@@ -205,6 +205,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
                 public void onChanged(@Nullable PaymentEntry entry) {
                     if(entry != null){
                         mPaymentEntry = entry;
+                        mPaymentEntry.setId(0);
                         showPayment();
                     }else {
                         fillBarcode(code);
