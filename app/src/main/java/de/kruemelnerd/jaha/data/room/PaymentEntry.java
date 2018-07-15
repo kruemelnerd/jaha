@@ -4,13 +4,14 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import java.io.Serializable;
 import java.util.Calendar;
 
 @Entity(tableName = "paymentEntry")
-public class PaymentEntry implements Serializable {
-//TODO: Use Parcable instead of Serializable
+public class PaymentEntry implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "paymentEntryId")
@@ -20,7 +21,7 @@ public class PaymentEntry implements Serializable {
     private String mName;
 
     @ColumnInfo(name = "price")
-    private float mPrice;
+    private double mPrice;
 
     @ColumnInfo(name = "description")
     private String mDescription;
@@ -34,9 +35,15 @@ public class PaymentEntry implements Serializable {
     @ColumnInfo(name = "barcode")
     private String mBarcode;
 
+    @ColumnInfo(name = "location")
+    private Location mLocation;
+
+    @ColumnInfo(name = "location_address")
+    private String mLocationAddress;
+
 
     @Ignore
-    public PaymentEntry(String name, float price) {
+    public PaymentEntry(String name, double price) {
         this.mName = name;
         this.mPrice = price;
     }
@@ -46,6 +53,46 @@ public class PaymentEntry implements Serializable {
         this.mPrice = 0f;
     }
 
+
+    protected PaymentEntry(Parcel in) {
+        mId = in.readInt();
+        mName = in.readString();
+        mPrice = in.readDouble();
+        mDescription = in.readString();
+        mCategory = in.readString();
+        mBarcode = in.readString();
+        mLocation = in.readParcelable(Location.class.getClassLoader());
+        mLocationAddress = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
+        dest.writeString(mName);
+        dest.writeDouble(mPrice);
+        dest.writeString(mDescription);
+        dest.writeString(mCategory);
+        dest.writeString(mBarcode);
+        dest.writeParcelable(mLocation, flags);
+        dest.writeString(mLocationAddress);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<PaymentEntry> CREATOR = new Creator<PaymentEntry>() {
+        @Override
+        public PaymentEntry createFromParcel(Parcel in) {
+            return new PaymentEntry(in);
+        }
+
+        @Override
+        public PaymentEntry[] newArray(int size) {
+            return new PaymentEntry[size];
+        }
+    };
 
     public int getId() {
         return mId;
@@ -63,11 +110,11 @@ public class PaymentEntry implements Serializable {
         this.mName = mName;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return mPrice;
     }
 
-    public void setPrice(float mPrice) {
+    public void setPrice(double mPrice) {
         this.mPrice = mPrice;
     }
 
@@ -101,6 +148,23 @@ public class PaymentEntry implements Serializable {
 
     public void setBarcode(String barcode) {
         this.mBarcode = barcode;
+    }
+
+
+    public Location getLocation() {
+        return mLocation;
+    }
+
+    public void setLocation(Location location) {
+        this.mLocation = location;
+    }
+
+    public String getLocationAddress() {
+        return mLocationAddress;
+    }
+
+    public void setLocationAddress(String locationAddress) {
+        this.mLocationAddress = locationAddress;
     }
 }
 

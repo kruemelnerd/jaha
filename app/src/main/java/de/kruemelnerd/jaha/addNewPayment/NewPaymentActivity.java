@@ -1,14 +1,24 @@
 package de.kruemelnerd.jaha.addNewPayment;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -16,8 +26,15 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -35,6 +52,7 @@ import static de.kruemelnerd.jaha.detail.DetailActivity.EXTRA_PAYMENT;
 public class NewPaymentActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String EXTRA_REPLY = "de.kruemelnerd.android.payment.listsql.REPLY";
+    private static final String TAG = "NewPaymentActivity";
 
     @BindView(R.id.addPaymentName)
     EditText mEditNameView;
@@ -48,6 +66,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
     EditText mEditViewBarcode;
     @BindView(R.id.addPaymentCategory)
     EditText mEditViewCategory;
+    @BindView(R.id.addPaymentLocation)
+    EditText mEditViewLocation;
 
 
     private PaymentViewModel mPaymentViewModel;
@@ -56,6 +76,13 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
     private Calendar newDate;
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
     private boolean isNewPayment;
+
+    //Location & Maps
+    private LocationRequest mLocationRequest;
+    private Location mLastLocation;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationCallback mLocationCallback;
+
 
 
     @Override
@@ -74,7 +101,10 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
 
 
         mPaymentViewModel = ViewModelProviders.of(this).get(PaymentViewModel.class);
-//
+
+        // Location
+
+        initLocationService();
 
         isNewPayment = checkIfNewPayment();
 
@@ -94,13 +124,102 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             Intent intent = getIntent();
             Bundle data = intent.getExtras();
             if (data != null) {
-                mPaymentEntry = (PaymentEntry) data.getSerializable(EXTRA_PAYMENT);
+                mPaymentEntry = (PaymentEntry) data.getParcelable(EXTRA_PAYMENT);
             }
             showPayment();
-
         }
+    }
+
+    private void initLocationService(){
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                List<Location> locationList = locationResult.getLocations();
+                if (locationList.size() > 0) {
+                    //The last location in the list is the newest
+                    Location location = locationList.get(locationList.size() - 1);
+                    Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                    mLastLocation = location;
+                    //TODO translate into address and display in TextField
+                    mEditViewLocation.setText("Location: " + location.getLatitude() + " " + location.getLongitude());
+                }
+            }
+        };
+    }
+
+    @OnClick(R.id.addPaymentLocationButton)
+    public void callLocationService(){
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(120000); // two minute interval
+        mLocationRequest.setFastestInterval(120000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                //Location Permission already granted
+                mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+            } else {
+                //Request Location Permission
+                checkLocationPermission();
+            }
+        }
+        else {
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+        }
+    }
 
 
+
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle("Location Permission Needed")
+                        .setMessage("This app needs the Location permission, please accept to use location functionality")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(NewPaymentActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION );
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION );
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //stop location updates when Activity is no longer active
+        if (mFusedLocationClient != null && mLocationCallback != null) {
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        }
     }
 
     private boolean checkIfNewPayment() {
@@ -109,7 +228,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         if (data == null) {
             return true;
         }
-        PaymentEntry entry = (PaymentEntry) data.getSerializable(EXTRA_PAYMENT);
+        PaymentEntry entry = (PaymentEntry) data.getParcelable(EXTRA_PAYMENT);
         return (entry == null);
     }
 
@@ -124,6 +243,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         mEditPriceView.setText(String.valueOf(mPaymentEntry.getPrice()));
         mEditViewBarcode.setText(mPaymentEntry.getBarcode());
         mEditViewCategory.setText(mPaymentEntry.getCategory());
+        mEditViewLocation.setText(mPaymentEntry.getLocationAddress());
+        mLastLocation = mPaymentEntry.getLocation();
         if (mPaymentEntry.getCalendarDate() != null) {
             final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
@@ -172,6 +293,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             mPaymentEntry.setBarcode(mEditViewBarcode.getText().toString());
             mPaymentEntry.setCategory(mEditViewCategory.getText().toString());
             mPaymentEntry.setCalendarDate(newDate);
+            mPaymentEntry.setLocationAddress(mEditViewLocation.getText().toString());
+            mPaymentEntry.setLocation(mLastLocation);
 
             replyIntent.putExtra(EXTRA_REPLY, mPaymentEntry);
             setResult(RESULT_OK, replyIntent);

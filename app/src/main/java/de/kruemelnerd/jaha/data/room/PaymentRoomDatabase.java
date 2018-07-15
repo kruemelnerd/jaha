@@ -9,8 +9,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import java.util.Calendar;
+import java.util.Locale;
 
-@Database(entities = {PaymentEntry.class}, version = 6)
+
+@Database(entities = {PaymentEntry.class}, version = 10)
 @TypeConverters({Converters.class})
 public abstract class PaymentRoomDatabase extends RoomDatabase {
 
@@ -53,9 +56,15 @@ public abstract class PaymentRoomDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
-            //mDao.deleteAll();
-//            PaymentEntry payment = new PaymentEntry("Hello", 12);
-//            mDao.insert(payment);
+            mDao.deleteAll();
+            PaymentEntry payment = new PaymentEntry("Fassbrause Orange", 0.69);
+            payment.setBarcode("4002209017510");
+            payment.setDescription("Für die Party gekauft, vorher getrunken.");
+            payment.setCategory("Party");
+            Calendar calendar = Calendar.getInstance(Locale.GERMAN);
+            calendar.set(2018, 07, 10);
+            payment.setCalendarDate(calendar);
+            mDao.insert(payment);
 //            payment = new PaymentEntry("World", 22);
 //            mDao.insert(payment);
             return null;

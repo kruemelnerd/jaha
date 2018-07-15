@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == NEW_PAYMENT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
-            PaymentEntry payment = (PaymentEntry) data.getSerializableExtra(NewPaymentActivity.EXTRA_REPLY);
+            PaymentEntry payment = (PaymentEntry) data.getParcelableExtra(NewPaymentActivity.EXTRA_REPLY);
             if(payment.getId() == 0){
                 mPaymentViewModel.insert(payment);
             }else {
