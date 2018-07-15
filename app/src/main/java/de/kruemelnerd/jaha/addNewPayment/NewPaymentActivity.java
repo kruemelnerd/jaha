@@ -7,10 +7,13 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -82,6 +85,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
     private Location mLastLocation;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
+    private AddressResultReceiver mResultReceiver;
+    private String mAddressOutput;
 
 
 
@@ -124,7 +129,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             Intent intent = getIntent();
             Bundle data = intent.getExtras();
             if (data != null) {
-                mPaymentEntry = (PaymentEntry) data.getParcelable(EXTRA_PAYMENT);
+                mPaymentEntry = data.getParcelable(EXTRA_PAYMENT);
             }
             showPayment();
         }
@@ -132,6 +137,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
 
     private void initLocationService(){
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mResultReceiver = new AddressResultReceiver(new Handler());
 
         mLocationCallback = new LocationCallback() {
             @Override
@@ -142,12 +148,39 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
                     Location location = locationList.get(locationList.size() - 1);
                     Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                     mLastLocation = location;
+
+                    // In some rare cases the location returned can be null
+                    if (mLastLocation == null) {
+                        return;
+                    }
+
+                    if (!Geocoder.isPresent()) {
+                        Toast.makeText(NewPaymentActivity.this, R.string.location_no_geocoder_available, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    // Start service and update UI to reflect new location
+                    startIntentService();
+                    updateLocationUI();
+
                     //TODO translate into address and display in TextField
-                    mEditViewLocation.setText("Location: " + location.getLatitude() + " " + location.getLongitude());
+
                 }
             }
         };
     }
+
+    private void updateLocationUI(){
+        if (mAddressOutput != null && StringUtils.isNotBlank(mAddressOutput)){
+            mEditViewLocation.setText(mAddressOutput);
+            mLastLocation = mPaymentEntry.getLocation();
+        }
+//        else if (mLastLocation != null){
+//            mEditViewLocation.setText("Location: " + mLastLocation.getLatitude() + " " + mLastLocation.getLongitude());
+//        }
+
+    }
+
 
     @OnClick(R.id.addPaymentLocationButton)
     public void callLocationService(){
@@ -171,8 +204,6 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         }
     }
-
-
 
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -212,6 +243,13 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    protected void startIntentService() {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(FetchAddressIntentService.RECEIVER, mResultReceiver);
+        intent.putExtra(FetchAddressIntentService.LOCATION_DATA_EXTRA, mLastLocation);
+        startService(intent);
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -228,7 +266,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         if (data == null) {
             return true;
         }
-        PaymentEntry entry = (PaymentEntry) data.getParcelable(EXTRA_PAYMENT);
+        PaymentEntry entry = data.getParcelable(EXTRA_PAYMENT);
         return (entry == null);
     }
 
@@ -243,8 +281,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         mEditPriceView.setText(String.valueOf(mPaymentEntry.getPrice()));
         mEditViewBarcode.setText(mPaymentEntry.getBarcode());
         mEditViewCategory.setText(mPaymentEntry.getCategory());
-        mEditViewLocation.setText(mPaymentEntry.getLocationAddress());
-        mLastLocation = mPaymentEntry.getLocation();
+        mAddressOutput = mPaymentEntry.getLocationAddress();
+        updateLocationUI();
         if (mPaymentEntry.getCalendarDate() != null) {
             final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
@@ -361,6 +399,38 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         if (v == mEditViewDate) {
             mDatePickerDialog.show();
+        }
+    }
+
+
+
+
+    class AddressResultReceiver extends ResultReceiver {
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            if (resultData == null) {
+                return;
+            }
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(FetchAddressIntentService.RESULT_DATA_KEY);
+            if (mAddressOutput == null) {
+                mAddressOutput = "";
+            }
+            updateLocationUI();
+
+            // Show a toast message if an address was found.
+            if (resultCode == FetchAddressIntentService.SUCCESS_RESULT) {
+                Toast.makeText(NewPaymentActivity.this, getString(R.string.location_address_found), Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 }

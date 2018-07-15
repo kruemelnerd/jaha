@@ -21,6 +21,9 @@
     <string name="location_not_granted">Don\'t worry. We will not use your loaction.</string>
     <string name="location_service_not_available">Location service not available at the moment. Please try again later.</string>
     <string name="location_invalid_lat_long_used">Invalid Latitude / Longitude used.</string>
+    <string name="location_no_address_found">No address found</string>
+    <string name="location_address_found">Address found</string>
+    <string name="location_no_geocoder_available">Geocoder not available</string>
 
     <string-array name="currencies_array">
         <item>Euro</item>
