@@ -22,6 +22,7 @@ public class PaymentEntry implements Parcelable {
 
     @ColumnInfo(name = "price")
     private double mPrice;
+    //FIXME: Use BigDecimal instead of double for avoiding uncorrect prices.
 
     @ColumnInfo(name = "description")
     private String mDescription;

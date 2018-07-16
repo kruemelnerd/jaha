@@ -13,7 +13,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 
-@Database(entities = {PaymentEntry.class}, version = 10)
+@Database(entities = {PaymentEntry.class}, version = 12)
 @TypeConverters({Converters.class})
 public abstract class PaymentRoomDatabase extends RoomDatabase {
 
