@@ -34,6 +34,14 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -52,7 +60,7 @@ import de.kruemelnerd.jaha.viewModel.PaymentViewModel;
 
 import static de.kruemelnerd.jaha.detail.DetailActivity.EXTRA_PAYMENT;
 
-public class NewPaymentActivity extends AppCompatActivity implements View.OnClickListener {
+public class NewPaymentActivity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
 
     public static final String EXTRA_REPLY = "de.kruemelnerd.android.payment.listsql.REPLY";
     private static final String TAG = "NewPaymentActivity";
@@ -77,7 +85,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
     private PaymentEntry mPaymentEntry;
     private DatePickerDialog mDatePickerDialog;
     private Calendar newDate;
-    private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
+    private final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
     private boolean isNewPayment;
 
     //Location & Maps
@@ -87,7 +95,9 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
     private LocationCallback mLocationCallback;
     private AddressResultReceiver mResultReceiver;
     private String mAddressOutput;
-
+    GoogleMap mGoogleMap;
+    MapFragment mapFragment;
+    Marker mCurrLocationMarker;
 
 
     @Override
@@ -110,6 +120,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         // Location
 
         initLocationService();
+        initMaps();
 
         isNewPayment = checkIfNewPayment();
 
@@ -122,8 +133,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             spinner.setAdapter(adapter);
 
             initDatePicker();
-            Calendar calender = Calendar.getInstance();
-            mEditViewDate.setText(dateFormatter.format(calender.getTime()));
+            updateDateUi();
 
         } else {
             Intent intent = getIntent();
@@ -135,7 +145,16 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void initLocationService(){
+    private void initMaps() {
+
+
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.addPaymentMaps);
+        mapFragment.getMapAsync(this);
+        mapFragment.getView().setVisibility(View.GONE);
+
+    }
+
+    private void initLocationService() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mResultReceiver = new AddressResultReceiver(new Handler());
 
@@ -170,20 +189,33 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         };
     }
 
-    private void updateLocationUI(){
-        if (mAddressOutput != null && StringUtils.isNotBlank(mAddressOutput)){
+    private void updateLocationUI() {
+        if (mAddressOutput != null && StringUtils.isNotBlank(mAddressOutput)) {
             mEditViewLocation.setText(mAddressOutput);
             mLastLocation = mPaymentEntry.getLocation();
         }
-//        else if (mLastLocation != null){
-//            mEditViewLocation.setText("Location: " + mLastLocation.getLatitude() + " " + mLastLocation.getLongitude());
-//        }
 
+        if (mLastLocation != null) {
+            if (mCurrLocationMarker != null) {
+                mCurrLocationMarker.remove();
+            }
+            mapFragment.getView().setVisibility(View.VISIBLE);
+            //Place current location marker
+            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title("Current Position");
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
+
+            //move map camera
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+        }
     }
 
 
     @OnClick(R.id.addPaymentLocationButton)
-    public void callLocationService(){
+    public void callLocationService() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(120000); // two minute interval
         mLocationRequest.setFastestInterval(120000);
@@ -195,18 +227,20 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
                     == PackageManager.PERMISSION_GRANTED) {
                 //Location Permission already granted
                 mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                mGoogleMap.setMyLocationEnabled(true);
+                mapFragment.getView().setVisibility(View.VISIBLE);
             } else {
                 //Request Location Permission
                 checkLocationPermission();
             }
-        }
-        else {
+        } else {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         }
     }
 
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -227,7 +261,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
                                 //Prompt the user once explanation has been shown
                                 ActivityCompat.requestPermissions(NewPaymentActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        MY_PERMISSIONS_REQUEST_LOCATION );
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
                             }
                         })
                         .create()
@@ -238,7 +272,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION );
+                        MY_PERMISSIONS_REQUEST_LOCATION);
             }
         }
     }
@@ -283,15 +317,18 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         mEditViewCategory.setText(mPaymentEntry.getCategory());
         mAddressOutput = mPaymentEntry.getLocationAddress();
         updateLocationUI();
+        initDatePicker();
+        updateDateUi();
+    }
+
+    private void updateDateUi(){
+        mEditViewDate.setInputType(InputType.TYPE_NULL);
         if (mPaymentEntry.getCalendarDate() != null) {
-            final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
-
-            mEditViewDate.setInputType(InputType.TYPE_NULL);
-            mEditViewDate.setText(dateFormatter.format(mPaymentEntry.getCalendarDate().getTime()));
-        } else {
-            Toast.makeText(this, "Date is missing", Toast.LENGTH_SHORT).show();
+            mEditViewDate.setText(DATE_FORMATTER.format(mPaymentEntry.getCalendarDate().getTime()));
+        }else {
+            Calendar calender = Calendar.getInstance();
+            mEditViewDate.setText(DATE_FORMATTER.format(calender.getTime()));
         }
-
     }
 
     private void initDatePicker() {
@@ -305,7 +342,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 newDate = Calendar.getInstance();
                 newDate.set(year, month, dayOfMonth);
-                mEditViewDate.setText(dateFormatter.format(newDate.getTime()));
+                mEditViewDate.setText(DATE_FORMATTER.format(newDate.getTime()));
             }
         }, calender.get(Calendar.YEAR), calender.get(Calendar.MONTH), calender.get(Calendar.DAY_OF_MONTH));
     }
@@ -364,11 +401,11 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             mPaymentViewModel.getPaymentWithBarcode(code).observe(this, new Observer<PaymentEntry>() {
                 @Override
                 public void onChanged(@Nullable PaymentEntry entry) {
-                    if(entry != null){
+                    if (entry != null) {
                         mPaymentEntry = entry;
                         mPaymentEntry.setId(0);
                         showPayment();
-                    }else {
+                    } else {
                         fillBarcode(code);
                     }
 
@@ -381,7 +418,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void fillBarcode(String barcode){
+    private void fillBarcode(String barcode) {
         Toast.makeText(this, getString(R.string.barcode_not_in_db), Toast.LENGTH_SHORT).show();
         mEditViewBarcode.setText(barcode);
     }
@@ -402,7 +439,11 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+    }
 
 
     class AddressResultReceiver extends ResultReceiver {
