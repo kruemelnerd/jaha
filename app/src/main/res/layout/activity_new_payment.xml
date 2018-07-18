@@ -52,10 +52,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.5" />
+                    app:layout_constraintGuide_percent="0.7" />
 
 
                 <android.support.design.widget.TextInputLayout
+
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toStartOf="@+id/guideline8"
@@ -75,13 +76,37 @@
                 </android.support.design.widget.TextInputLayout>
 
 
-                <Spinner
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/textInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guideline8">
+
+                    <EditText
+                        android:id="@+id/currencies_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/big_margin"
+                        android:layout_marginTop="@dimen/big_margin"
+                        android:ems="10"
+                        android:hint="@string/hint_currency"
+                        android:inputType="numberDecimal|numberSigned"
+                        android:padding="@dimen/small_padding"
+                        android:text="@string/currency_euro"
+                        android:clickable="false"
+                        android:cursorVisible="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false" />
+
+                </android.support.design.widget.TextInputLayout>
+                <!--<Spinner
                     android:id="@+id/currencies_spinner"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/guideline8" />
+                    app:layout_constraintStart_toStartOf="@id/guideline8" />-->
 
 
             </android.support.constraint.ConstraintLayout>

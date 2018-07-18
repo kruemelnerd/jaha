@@ -23,10 +23,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -126,12 +124,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
 
         if (isNewPayment) {
             mPaymentEntry = new PaymentEntry();
-            Spinner spinner = findViewById(R.id.currencies_spinner);
-            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                    R.array.currencies_array, android.R.layout.simple_spinner_item);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(adapter);
-
+            initSpinner();
             initDatePicker();
             updateDateUi();
 
@@ -143,6 +136,15 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             }
             showPayment();
         }
+    }
+
+    private void initSpinner() {
+        // Not working in this Version :(
+       /* Spinner spinner = findViewById(R.id.currencies_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.currencies_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);*/
     }
 
     private void initMaps() {

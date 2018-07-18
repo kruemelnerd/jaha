@@ -11,6 +11,7 @@
     <string name="hint_location">Location</string>
     <string name="hint_description">Description</string>
     <string name="hint_picture">Picture</string>
+    <string name="hint_currency">Currency</string>
 
 
     <string name="button_save">Save</string>
@@ -25,6 +26,8 @@
     <string name="location_address_found">Address found</string>
     <string name="location_no_geocoder_available">Geocoder not available</string>
 
+
+    <string name="currency_euro">€</string>
     <string-array name="currencies_array">
         <item>Euro</item>
         <item>USD</item>
