@@ -20,6 +20,8 @@ package de.kruemelnerd.jaha.addNewPayment.barcodescanner;
  * <p>Encapsulates the result of a barcode scan invoked through {@link IntentIntegrator}.</p>
  *
  * @author Sean Owen
+ *
+ * src: https://github.com/zxing/zxing/blob/master/android-integration/src/main/java/com/google/zxing/integration/android/IntentResult.java
  */
 public final class IntentResult {
 

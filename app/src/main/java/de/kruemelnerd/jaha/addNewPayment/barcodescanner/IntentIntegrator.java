@@ -106,6 +106,8 @@ import java.util.Map;
  * @author Isaac Potoczny-Jones
  * @author Brad Drehmer
  * @author gcstang
+ *
+ * src: https://github.com/zxing/zxing/blob/master/android-integration/src/main/java/com/google/zxing/integration/android/IntentIntegrator.java
  */
 public class IntentIntegrator {
 
