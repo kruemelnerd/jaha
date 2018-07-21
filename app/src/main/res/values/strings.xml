@@ -25,6 +25,8 @@
     <string name="location_no_address_found">No address found</string>
     <string name="location_address_found">Address found</string>
     <string name="location_no_geocoder_available">Geocoder not available</string>
+    <string name="location_permission_needed_for_app">This app needs the Location permission, please accept to use location functionality</string>
+    <string name="location_permission_needed_for_app_title">Location Permission Needed</string>
 
 
     <string name="currency_euro">€</string>

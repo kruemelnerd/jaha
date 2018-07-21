@@ -255,8 +255,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(this)
-                        .setTitle("Location Permission Needed")
-                        .setMessage("This app needs the Location permission, please accept to use location functionality")
+                        .setTitle(getString(R.string.location_permission_needed_for_app_title))
+                        .setMessage(getString(R.string.location_permission_needed_for_app))
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
