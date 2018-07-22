@@ -1,0 +1,34 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#474E5E"
+    android:padding="@dimen/widget_margin"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/widget_headline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/widget_headline"
+        tools:text="@string/widget_headline"
+        android:textColor="@android:color/white"/>
+
+
+    <Button
+        android:id="@+id/widget_add_new_payment"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/widget_button" />
+
+
+
+
+    <ImageView
+        android:id="@+id/widget_picture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:src="@drawable/ic_launcher_foreground" />
+</LinearLayout>

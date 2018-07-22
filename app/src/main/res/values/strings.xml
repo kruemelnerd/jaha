@@ -35,5 +35,8 @@
         <item>USD</item>
         <item>Yen</item>
     </string-array>
+    <string name="widget_headline">Overview</string>
+    <string name="widget_button">Display all entries</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>
