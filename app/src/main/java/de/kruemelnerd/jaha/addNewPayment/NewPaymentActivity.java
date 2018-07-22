@@ -314,7 +314,8 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
 
         mEditNameView.setText(mPaymentEntry.getName());
         mEditViewDescription.setText(mPaymentEntry.getDescription());
-        mEditPriceView.setText(String.valueOf(mPaymentEntry.getPrice()));
+        float priceInEuro = Float.valueOf(mPaymentEntry.getPrice()) / 100;
+        mEditPriceView.setText(String.valueOf(priceInEuro));
         mEditViewBarcode.setText(mPaymentEntry.getBarcode());
         mEditViewCategory.setText(mPaymentEntry.getCategory());
         mAddressOutput = mPaymentEntry.getLocationAddress();
@@ -365,7 +366,9 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         if (nameFilled && priceFilled) {
 
             mPaymentEntry.setName(mEditNameView.getText().toString());
-            mPaymentEntry.setPrice(Float.valueOf(mEditPriceView.getText().toString()));
+            float priceInEuro = Float.valueOf(mEditPriceView.getText().toString());
+            int priceinCent = Math.round(priceInEuro * 100);
+            mPaymentEntry.setPrice(priceinCent);
             mPaymentEntry.setDescription(mEditViewDescription.getText().toString());
             mPaymentEntry.setBarcode(mEditViewBarcode.getText().toString());
             mPaymentEntry.setCategory(mEditViewCategory.getText().toString());

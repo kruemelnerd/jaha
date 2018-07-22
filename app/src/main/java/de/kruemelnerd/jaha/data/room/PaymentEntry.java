@@ -21,8 +21,7 @@ public class PaymentEntry implements Parcelable {
     private String mName;
 
     @ColumnInfo(name = "price")
-    private double mPrice;
-    //FIXME: Use BigDecimal instead of double for avoiding uncorrect prices.
+    private int mPrice;
 
     @ColumnInfo(name = "description")
     private String mDescription;
@@ -44,21 +43,21 @@ public class PaymentEntry implements Parcelable {
 
 
     @Ignore
-    public PaymentEntry(String name, double price) {
+    public PaymentEntry(String name, int price) {
         this.mName = name;
         this.mPrice = price;
     }
 
     public PaymentEntry() {
         this.mName = "";
-        this.mPrice = 0f;
+        this.mPrice = 0;
     }
 
 
     protected PaymentEntry(Parcel in) {
         mId = in.readInt();
         mName = in.readString();
-        mPrice = in.readDouble();
+        mPrice = in.readInt();
         mDescription = in.readString();
         mCategory = in.readString();
         mBarcode = in.readString();
@@ -70,7 +69,7 @@ public class PaymentEntry implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mId);
         dest.writeString(mName);
-        dest.writeDouble(mPrice);
+        dest.writeInt(mPrice);
         dest.writeString(mDescription);
         dest.writeString(mCategory);
         dest.writeString(mBarcode);
@@ -111,11 +110,11 @@ public class PaymentEntry implements Parcelable {
         this.mName = mName;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return mPrice;
     }
 
-    public void setPrice(double mPrice) {
+    public void setPrice(int mPrice) {
         this.mPrice = mPrice;
     }
 

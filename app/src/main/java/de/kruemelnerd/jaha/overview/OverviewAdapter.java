@@ -58,7 +58,8 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.WordVi
         if (mPayments != null) {
             final PaymentEntry current = mPayments.get(position);
             holder.paymentNameTextView.setText(current.getName());
-            holder.paymentPriceTextView.setText(String.valueOf(current.getPrice()));
+            float priceInEuro = Float.valueOf(current.getPrice()) / 100;
+            holder.paymentPriceTextView.setText(String.valueOf(priceInEuro));
 
             holder.overviewItemHolder.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -10,7 +10,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 
-@Database(entities = {PaymentEntry.class}, version = 12)
+@Database(entities = {PaymentEntry.class}, version = 13)
 @TypeConverters({Converters.class})
 public abstract class PaymentRoomDatabase extends RoomDatabase {
 
