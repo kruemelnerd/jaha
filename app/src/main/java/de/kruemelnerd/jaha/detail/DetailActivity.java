@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -66,8 +65,6 @@ public class DetailActivity extends AppCompatActivity {
             final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
             mDetailDate.setText(dateFormatter.format(entry.getCalendarDate().getTime()));
-        }else {
-            Toast.makeText(this, "Date is missing", Toast.LENGTH_SHORT).show();
         }
 
     }
