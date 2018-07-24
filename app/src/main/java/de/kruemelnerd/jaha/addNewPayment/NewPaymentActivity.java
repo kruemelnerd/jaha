@@ -128,7 +128,6 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
 
         if (isNewPayment) {
             mPaymentEntry = new PaymentEntry();
-            initSpinner();
             initDatePicker();
             updateDateUi();
 
@@ -140,15 +139,6 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
             }
             showPayment();
         }
-    }
-
-    private void initSpinner() {
-        // Not working in this Version :(
-       /* Spinner spinner = findViewById(R.id.currencies_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.currencies_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);*/
     }
 
     private void initMaps() {

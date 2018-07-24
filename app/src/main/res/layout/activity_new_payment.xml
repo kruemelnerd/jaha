@@ -195,7 +195,8 @@
                     android:layout_gravity="right"
                     android:tint="@android:color/white"
                     android:enabled="true"
-                    app:srcCompat="@drawable/ic_location_white"/>
+                    app:srcCompat="@drawable/ic_location_white"
+                    android:contentDescription="@string/contentDescription_find_location" />
             </LinearLayout>
 
             <fragment
@@ -255,7 +256,8 @@
         android:tint="@android:color/white"
         app:layout_anchor="@id/newPaymentAppBar"
         app:layout_anchorGravity="bottom|right|end"
-        app:srcCompat="@drawable/barcode_scan" />
+        app:srcCompat="@drawable/barcode_scan"
+        android:contentDescription="@string/contentDescription_scan_barcode"/>
 
 </android.support.design.widget.CoordinatorLayout>
 

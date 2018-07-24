@@ -68,9 +68,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.WordVi
                 }
             });
 
-        } else {
-            // Covers the case of data not being ready yet.
-            holder.paymentNameTextView.setText("No Word");
         }
     }
 
