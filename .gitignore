@@ -1,6 +1,5 @@
 **/secrets.properties
 **/secrets.xml
-**/keystore.properties
 
 # Created by https://www.gitignore.io/api/git,java,gradle,android,windows,intellij+all,androidstudio
 
@@ -301,6 +300,5 @@ gradle-app.setting
 
 
 # End of https://www.gitignore.io/api/git,java,gradle,android,windows,intellij+all,androidstudio
-/keystore.properties
 app/libs/
 app/src/main/res/drawable-v24/
