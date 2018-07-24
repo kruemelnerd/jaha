@@ -18,7 +18,10 @@
     <string name="error_field_required">This field is required</string>
     <string name="barcode_not_found">Barcode couldn\'t be found.</string>
     <string name="barcode_not_in_db">Barcode isn\'t in the Database.</string>
-
+    <string name="barcode_not_found_online">No Entry found online for this barcode.</string>
+    <string name="barcode_name_not_found_online">Name not found online.</string>
+    <string name="barcode_language_not_found_online">Product not found in your language: </string>
+    
     <string name="location_not_granted">Don\'t worry. We will not use your loaction.</string>
     <string name="location_service_not_available">Location service not available at the moment. Please try again later.</string>
     <string name="location_invalid_lat_long_used">Invalid Latitude / Longitude used.</string>

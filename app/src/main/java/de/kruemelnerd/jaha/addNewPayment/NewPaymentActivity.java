@@ -52,6 +52,10 @@ import butterknife.OnClick;
 import de.kruemelnerd.jaha.R;
 import de.kruemelnerd.jaha.addNewPayment.barcodescanner.IntentIntegrator;
 import de.kruemelnerd.jaha.addNewPayment.barcodescanner.IntentResult;
+import de.kruemelnerd.jaha.addNewPayment.onlineBarcodeDatabase.model.ElementNotFoundException;
+import de.kruemelnerd.jaha.addNewPayment.onlineBarcodeDatabase.model.GtinResponse;
+import de.kruemelnerd.jaha.addNewPayment.onlineBarcodeDatabase.model.Payload;
+import de.kruemelnerd.jaha.addNewPayment.onlineBarcodeDatabase.model.ResultsItem;
 import de.kruemelnerd.jaha.data.room.PaymentEntry;
 import de.kruemelnerd.jaha.utils.StringUtils;
 import de.kruemelnerd.jaha.viewModel.PaymentViewModel;
@@ -324,11 +328,11 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         updateDateUi();
     }
 
-    private void updateDateUi(){
+    private void updateDateUi() {
         mEditViewDate.setInputType(InputType.TYPE_NULL);
         if (mPaymentEntry.getCalendarDate() != null) {
             mEditViewDate.setText(DATE_FORMATTER.format(mPaymentEntry.getCalendarDate().getTime()));
-        }else {
+        } else {
             Calendar calender = Calendar.getInstance();
             mEditViewDate.setText(DATE_FORMATTER.format(calender.getTime()));
         }
@@ -411,6 +415,7 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
                         mPaymentEntry.setId(0);
                         showPayment();
                     } else {
+                        checkOnlineForBarcode(code);
                         fillBarcode(code);
                     }
 
@@ -423,8 +428,58 @@ public class NewPaymentActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    private void checkOnlineForBarcode(String barcode) {
+        mPaymentViewModel.getProductForGtin(barcode).observe(this, new Observer<GtinResponse>() {
+            @Override
+            public void onChanged(@Nullable GtinResponse gtinResponse) {
+                try {
+                    if (gtinResponse != null && gtinResponse.getPayload() != null) {
+                        Payload payload = gtinResponse.getPayload();
+
+                        ResultsItem germanItem = getItemForLanguage(payload.getResults());
+                        if (StringUtils.isNotBlank(payload.getGtinCode())) {
+                            mPaymentEntry.setBarcode(payload.getGtinCode());
+                        }
+                        if (StringUtils.isNotBlank(germanItem.getProductName())) {
+                            mPaymentEntry.setName(germanItem.getProductName());
+                        } else {
+                            throw new ElementNotFoundException(getString(R.string.barcode_name_not_found_online));
+                        }
+                    } else {
+                        throw new ElementNotFoundException(getString(R.string.barcode_not_found_online));
+                    }
+                    showPayment();
+                } catch (ElementNotFoundException e) {
+                    Log.i(TAG, e.getMessage());
+                    displayErrorMessage(e.getMessage());
+
+                }
+
+
+            }
+        });
+    }
+
+    private void displayErrorMessage(String message) {
+        Toast.makeText(NewPaymentActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private ResultsItem getItemForLanguage(List<ResultsItem> results) throws ElementNotFoundException {
+        Locale current = getResources().getConfiguration().locale;
+        String language = current.getLanguage();
+        if (language != null && results != null && results.size() > 0) {
+            for (ResultsItem item : results) {
+                String languageCode = item.getLanguageCode();
+                if (languageCode != null && language.equals(languageCode.toLowerCase())) {
+                    return item;
+                }
+            }
+        }
+        throw new ElementNotFoundException(getString(R.string.barcode_language_not_found_online) + " " + language);
+    }
+
     private void fillBarcode(String barcode) {
-        Toast.makeText(this, getString(R.string.barcode_not_in_db), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, getString(R.string.barcode_not_in_db), Toast.LENGTH_SHORT).show();
         mEditViewBarcode.setText(barcode);
     }
 

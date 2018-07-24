@@ -1,0 +1,43 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Headers: authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction
+Access-Control-Allow-Methods: GET
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Length: 249
+Content-Type: application/json
+Date: Mon, 23 Jul 2018 18:47:14 GMT
+Server: Mashape/5.0.6
+Vary: Accept-Encoding
+X-Ratelimit-Extract-Product-Info-From-Page-Limit: 1000
+X-Ratelimit-Extract-Product-Info-From-Page-Remaining: 1000
+X-Ratelimit-Extract-Product-Info-From-Url-Limit: 1000
+X-Ratelimit-Extract-Product-Info-From-Url-Remaining: 1000
+X-Ratelimit-Gtin-Look-Up-Limit: 1000
+X-Ratelimit-Gtin-Look-Up-Remaining: 995
+
+{
+  "status": "ok",
+  "payload": {
+    "results": [
+      {
+        "productName": "Sonett Kernseife",
+        "brand": null,
+        "languageCode": "de"
+      },
+      {
+        "productName": "Sonett Essential Soap (100g)",
+        "brand": "sonett",
+        "languageCode": "fr"
+      },
+      {
+        "productName": "Ekologiczne mydło roślinne (popularne) kostka 100 g (Sonett)",
+        "brand": "sonett",
+        "languageCode": "pl"
+      }
+    ],
+    "gtinType": "ean13",
+    "gtinCode": "4007547202115"
+  },
+  "tookMs": 0,
+  "message": null
+}
