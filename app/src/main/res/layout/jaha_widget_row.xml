@@ -2,8 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
-    android:background="@android:color/white" >
+    android:background="@android:color/white">
 
     <ImageView
         android:id="@+id/imageView"
@@ -23,10 +24,12 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_toRightOf="@id/imageView"
+        android:layout_toEndOf="@id/imageView"
         android:singleLine="true"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:text="Heading"/>
+        tools:text="Heading"
+         />
 
     <TextView
         android:id="@+id/content"
@@ -37,7 +40,8 @@
         android:layout_below="@id/heading"
         android:layout_marginTop="5dip"
         android:layout_toRightOf="@id/imageView"
+        android:layout_toEndOf="@id/imageView"
         android:textSize="14sp"
-        android:text="Content"/>
+        tools:text="Content"/>
 
 </RelativeLayout>

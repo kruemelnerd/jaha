@@ -169,7 +169,7 @@
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_weight="1"
-                    android:layout_gravity="left"
+                    android:layout_gravity="start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
@@ -192,7 +192,7 @@
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
+                    android:layout_gravity="end"
                     android:tint="@android:color/white"
                     android:enabled="true"
                     app:srcCompat="@drawable/ic_location_white"
