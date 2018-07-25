@@ -16,8 +16,8 @@ package de.kruemelnerd.jaha.data.room;
  * limitations under the License.
  */
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class PaymentRepository {
     // dependency. This adds complexity and much more code, and this sample is not about testing.
     // See the BasicSample in the android-architecture-components repository at
     // https://github.com/googlesamples
-    public PaymentRepository(Application application) {
+    public PaymentRepository(Context application) {
         PaymentRoomDatabase db = PaymentRoomDatabase.getDatabase(application);
         mPaymentDao = db.paymentEntryDao();
         mAllWords = mPaymentDao.getAllPayments();
@@ -52,6 +52,8 @@ public class PaymentRepository {
         return mPaymentDao.getPaymentWithBarcode(barcode);
     }
 
+
+    public List<PaymentEntry> getAllPaymentsSync(){ return mPaymentDao.getAllPaymentsSync(); }
 
 
     public void update(PaymentEntry payment) {

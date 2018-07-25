@@ -23,6 +23,11 @@ public interface PaymentDao {
     @Query("SELECT * from paymentEntry ORDER BY name ASC")
     LiveData<List<PaymentEntry>> getAllPayments();
 
+    @Query("SELECT * from paymentEntry ORDER BY name ASC")
+    List<PaymentEntry> getAllPaymentsSync();
+
+
+
     @Delete
     int delete(PaymentEntry entry);
 
